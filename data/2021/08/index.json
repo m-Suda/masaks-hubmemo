@@ -1,0 +1,15 @@
+[
+    {
+        "private": false,
+        "title": "RxJS v7 キャッチアップ",
+        "content": "## 背景\n- Angular v12.2にて、RxJS v7が正式に使えるようになった。\n- Angular v13,14辺りで完全にRxJS v7に移行されるかも\n\n## RxJS v7の変更点\n- バンドルサイズが減った\n    - 53%まで減った\n    - これはスクラッチではなく全部リファクタリングした\n        - ひたすら単体テストコード書いてリファクタリングしてた\n    - 安心して使ってくれとのこと\n- TypeScript型付けの修正\n    - TypeScript4に対応してより厳格になった。\n        - 例えば `Subject` にジェネリクスで型をつけても `.next()` が引数なしで呼ぶことができた\n        - 今回からだめになった。\n    - v6系はTypeScript2系のものも対応していた\n        - 互換性を保つため\n    - 今回からTypeScript4.2がBaseになる。\n        - だいぶ下が切られた。\n- `.toPromise()`について\n    - 返却値の型が `|undefined` になった\n        - 値が返却されずに `.complete()` されるとundefinedが渡されるため。\n        - `strict: true` にしているプロジェクトはコンパイルが通らなくなるかもしれない。\n    - deprecatedになった\n        - 今までObservableは複数の値を流すのに、どこをPromiseで返すのかが問題だった。\n        - 代わりに`lastValueFrom()` または `firstValueFrom()` を使う。\n            - `defaultValue` が指定できる。\n- 引数が無数に渡せる関数に引数をたくさん渡すとある数から型推論が効かなくなるのを修正\n    - 例: `of()`\n    - そもそもそんなに渡すことあるのかな…？\n- `Subscription.add()`が実は機能していなかった…。のが修正された。\n    - 実はミュータブルの処理だった。 `add` してるのにただ書き換えてるだけだった。\n        - 最後にaddされたものだけがunsubscribeされる。\n    - `.add().add().add()` のようにメソッドチェーンしてる場合のみダメだった。\n    - だいたい `.takeUntil()` 使うので問題ない。\n- Multicastするoperatorに変更が入った\n    - そもそもこれら似たやつが多い\n    - 特に `shareReplay()` が多く使われており、とりあえず使っとけ状態\n        - 結果、混乱を生んでいた。\n    - そこで `.share()` のオプションが充実化された\n        - 全てのベースとなるものになり、自分でオプションを設定する形式に。\n        - 他のやつがdeprecateになった。これからは`share`, `connectable`を使っていく\n            - `shareReplay()` はあまりにも使われすぎていてまだdeprecateにはなっていない。\n\n## RxJS v7の新機能\n- AsyncIterable\n    - 実質Observable\n    - Observableを引数として受け取るAPIにはAsyncIterableも渡せるようになった。\n    - 世の中の非同期系のライブラリはAsyncIterableが増えていくかもしれない\n        - その時にRxJSと一緒に使いやすくなるかもしれない。\n- ReadableStream\n    - fetch APIとかで返ってくる値\n    - これも上記と一緒でRxJSで使えるように。\n- `animationFrames()`\n    - アニメーション系のFrameごとに発火するObservable\n- `throwError()` が改善された\n- `combineLatest()` がObjectも渡せるようになった。\n\n## RxJS v7.1/2/3\n- Subjectに`observed(): boolean`が生えた\n    - 誰かがsubscribeしているか\n- `rxjs/operators` ではなく `rxjs` からimport可能に。\n    - アツい\n- `retry()` に `delay` を指定できるようになった。\n    - エラーが起きたらもう一度実行するやつ。\n    - numberかcallbackを渡せる\n        - callbackに関してはretryCountも渡せる。retryするたびにdelayを長くしていくことも可能。\n- `tap()`にnext以外のイベントハンドラーも指定できるようになった\n    - subscribe, complete, unsubscribe, finalize\n\n## RxJS v8の予告\n- deprecateの削除\n- AbortSignal support? \n    - cancelablePromiss\n    - 非同期処理を中止する。\n- バンドルサイズの改善\n\n## 質問コーナー\n- `ng new` してもv7は入らない?\n    - Angular v12はまだ。\n\n## 感想\n- `.takeUntil()` ってcompleteしなくていいんだ…。\n\n## 資料\n- [スライド](https://docs.google.com/presentation/d/1-LU7YE3NWw8jHeAgdmLu4CBfG7osCx6MsSIeFs16k60/edit?usp=sharing)\n- [shownote](https://hackmd.io/@lacolaco/rkOoQZO1t)",
+        "url": "https://youtu.be/zLiokJyPomA",
+        "tags": [
+            "RxJS"
+        ],
+        "date": "2021-08-11T13:20:40.518Z",
+        "viaURL": "https://github.com/m-Suda/masaks-hubmemo/issues/1",
+        "media": [],
+        "relatedItems": []
+    }
+]
